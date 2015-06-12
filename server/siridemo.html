@@ -884,33 +884,27 @@ module.exports = L.Realtime;
 //													interval: 5 * 1000
 //												}).addTo(map);
 
-												$.ajax({
-														url: '/pt/stops',
-														type: 'get',
-														contentType: 'application/json'
-												})
-												.done(function(data) {
-														//var colors=['#d95f02', '#d95f02', '#d95f02', '#1b9e77', '#1b9e77', '#1b9e77', '#7570b3', '#7570b3', '#7570b3', 'transparent'];
-														//var colors=['#0f0', '#2e0', '#4c0', '#6a0', '#880', '#a60', '#c40', '#e20', '#f00', '#ccc'];
-														var colors=['#ccc', '#5899fa', '#5bdeb1', '#ff7', '#f79f34', '#f46b6b'];
-														L.geoJson(data, {
-																pointToLayer: function(feature, latlng) {
-																	return new L.CircleMarker(latlng, {
-																		weight: 7,
-																		opacity: 1,
-																		radius: 5,
-																		stroke: false,
-																		color: '#000',
-																		opacity: 0.3,
-																		weight: 1,
-																		fill: true,
-																		fillOpacity: 0.5,
-																		fillColor: colors[categorizeDelay(feature['properties']['delay'])],
-																		clickable: false
-																	})
-																}
-														}).addTo(map);
-												});
+												var colors=['#ccc', '#5899fa', '#5bdeb1', '#ff7', '#f79f34', '#f46b6b'];
+												L.realtime({url: '/pt/stops',
+														type: 'json'
+												}, {
+														pointToLayer: function(feature, latlng) {
+															return new L.CircleMarker(latlng, {
+																weight: 7,
+																opacity: 1,
+																radius: 5,
+																stroke: false,
+																color: '#000',
+																opacity: 0.3,
+																weight: 1,
+																fill: true,
+																fillOpacity: 0.5,
+																fillColor: colors[categorizeDelay(feature['properties']['delay'])],
+																clickable: false
+															})
+														},
+														interval: 5*1000
+												}).addTo(map);
 
 												$.ajax({
 														url: '/pt/routes',
