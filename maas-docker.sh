@@ -1,7 +1,7 @@
 #!/bin/sh
 
 base="ubuntu:latest"
-image="okffi/maas"
+image="okffi/maas-siri"
 maascmd="/maas/server/run.sh"
 packer="packer"
 docker="docker"
@@ -58,7 +58,7 @@ case "$1" in
 		if [ "$2" != "" ]; then
 				port=$2
 		fi
-		$docker run -d -w /maas/server -p $port:8080 "$image" $maascmd 8080
+		$docker run -d -w /maas/server -p $port:8081 "$image" $maascmd 8081
 		rc=$?
 		;;
 	stop)

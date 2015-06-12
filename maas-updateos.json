@@ -1,7 +1,7 @@
 {
   "variables": {
-    "base_image": "okffi/maas",
-    "maas_image": "okffi/maas"
+    "base_image": "okffi/maas-siri",
+    "maas_image": "okffi/maas-siri"
   },
   "builders": [
     {

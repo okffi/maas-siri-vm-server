@@ -1,7 +1,7 @@
 {
 	"variables": {
 		"base_image": "ubuntu:latest",
-		"maas_image": "okffi/maas"
+		"maas_image": "okffi/maas-siri"
 	},
 	"builders": [
 		{
@@ -25,6 +25,7 @@
 								"sudo apt-get install python-lxml",
 								"sudo apt-get install python-shortuuid",
 								"sudo pip install PPyGIS",
+								"sudo pip install unicodecsv",
 								"sudo mkdir /maas",
 								"sudo mkdir /maas/server",
 								"/etc/init.d/postgresql start"
