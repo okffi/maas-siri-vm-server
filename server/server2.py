@@ -371,7 +371,7 @@ class MaaS():
 				cursor.execute("INSERT INTO mt_city (name, country) VALUES (%s, %s)",
 											 (city, country))
 
-				file=unicodecsv.reader(open('../../google_traffic/agency.txt'), encoding='utf-8')
+				file=unicodecsv.reader(open('gtfs/agency.txt'), encoding='utf-8')
 				file.next()
 				for line in file:
 					if len(line) >= 4:
@@ -386,7 +386,7 @@ class MaaS():
 														line[5]     if len(line) >= 5 else None,
 													 ))
 
-				file=unicodecsv.reader(open('../../google_traffic/stops.txt'), encoding='utf-8')
+				file=unicodecsv.reader(open('gtfs/stops.txt'), encoding='utf-8')
 				file.next()
 				for line in file:
 					if len(line) >= 5:
@@ -401,7 +401,7 @@ class MaaS():
 														float(line[5]),
 														float(line[4]),
 														))
-				file=unicodecsv.reader(open('../../google_traffic/shapes.txt'), encoding='utf-8')
+				file=unicodecsv.reader(open('gtfs/shapes.txt'), encoding='utf-8')
 				file.next()
 				shapes={}
 				for line in file:
@@ -418,7 +418,7 @@ class MaaS():
 					shapes[shape_id]=shape
 
 
-				file=unicodecsv.reader(open('../../google_traffic/trips.txt'), encoding='utf-8')
+				file=unicodecsv.reader(open('gtfs/trips.txt'), encoding='utf-8')
 				file.next()
 				routes={}
 				for line in file:
@@ -429,7 +429,7 @@ class MaaS():
 							if line[6] in shapes:
 								routes[line[0]]['shapes'][line[6]]=shapes[line[6]]
 
-				file=unicodecsv.reader(open('../../google_traffic/routes.txt'), encoding='utf-8')
+				file=unicodecsv.reader(open('gtfs/routes.txt'), encoding='utf-8')
 				file.next()
 				for line in file:
 					if len(line) >= 5:
@@ -460,7 +460,7 @@ class MaaS():
 												ppygis.LineString(linestring, srid=4326),
 											 ))
 
-				file=unicodecsv.reader(open('../../google_traffic/shapes.txt'), encoding='utf-8')
+				file=unicodecsv.reader(open('gtfs/shapes.txt'), encoding='utf-8')
 				file.next()
 				shapes={}
 				for line in file:

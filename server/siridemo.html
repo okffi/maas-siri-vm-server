@@ -857,7 +857,7 @@ module.exports = L.Realtime;
 								'use strict';
 								$(document)
 										.on('ready', function() {
-												var map = L.map('map').setView([65.02408139, 25.49724200], 13);
+												var map = L.map('map').setView([65.02408139, 25.49724200], 9);
 												var markers=[];
 												L.tileLayer(//'http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png',
 																		//'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png',
@@ -931,6 +931,7 @@ module.exports = L.Realtime;
 												});
 
 												function categorizeDelay(delay) {
+														if (delay==null) return 0;
 														if (delay<=0*60) return 1;
 														if (delay<=2*60) return 2;
 														if (delay<=5*60) return 3;

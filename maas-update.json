@@ -24,5 +24,14 @@
 								"sudo -u postgres psql -d sujuvuusnavigaattori -a -f /maas/server/update.sql"
 						]
 				}
-	]
+	],
+	"post-processors": [
+				[
+						{
+								"type": "docker-tag",
+								"repository": "{{user `maas_image`}}",
+								"tag": "latest"
+						}
+				]
+		]
 }

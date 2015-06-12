@@ -1,0 +1,49 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+71,48315,7N,Keskusta - Saarela,,3,,3300cc,ffffff
+1,6750,1,Jylkynkangas - Metelinkangas,,3,,3300cc,ffffff
+442,6750,4N,Keskusta - Iinatti - Heikkilänkangas,,3,,3300cc,ffffff
+234,6750,23T,Ii - Oulu,,3,,000000,ffffff
+9,6750,9,Lentoasema - Heikinharju,,3,,3300cc,ffffff
+41,47258,41,Oulu - Muhos - Oulu,,3,,000000,ffffff
+592,48315,59V,Oulu - Hailuoto,,3,,000000,ffffff
+21,6750,21,Kellon Kiviniemi - Oulunsuu,,3,,000000,ffffff
+7,48315,7,Saarela - Puolivälinkangas,,3,,3300cc,ffffff
+2,6750,2,Ritaharju - Metsokangas,,3,,3300cc,ffffff
+882,6750,8V,Keskusta - Lentoasema,,3,,3300cc,ffffff
+441,6750,4A,Herukka - Heikkilänkangas,,3,,3300cc,ffffff
+411,47258,41,Oulu - Muhos - Oulu,,3,,000000,ffffff
+4,6750,4,Herukka - Iinatti,,3,,3300cc,ffffff
+51,6750,51,Oulu - Kempele,,3,,000000,ffffff
+8,6750,8,Lentoasema - Teknologiakylä,,3,,3300cc,ffffff
+237,6750,23TA,Ii - Oulu,,3,,000000,ffffff
+403,47258,40V,Oulu - Laukaun silta - Muhos,,3,,000000,ffffff
+16,47258,16,Mäntylä - Kontinkangas,,3,,000000,ffffff
+151,6750,15N,Keskusta - Nallikari,,3,,3300cc,ffffff
+401,47258,40K,Oulu - Muhos - Oulu,,3,,000000,ffffff
+102,48315,C,Keskusta - Limingantulli,,3,,999999,000000
+211,6750,21,Kellon Kiviniemi - Oulunsuu,,3,,000000,ffffff
+100,48315,A,Keskusta - Värttö,,3,,999999,000000
+531,6750,53K,Oulu - Liminka - Lumijoki,,3,,000000,ffffff
+412,47258,41K,Oulu - Muhos - Oulu,,3,,000000,ffffff
+59,48315,59,Hailuoto - Oulu,,3,,000000,ffffff
+11,6750,11,Keskusta - Kivikkokangas,,3,,3300cc,ffffff
+992,6750,9VB,Keskusta - Lentoasema,,3,,3300cc,ffffff
+361,47258,36,Ylikiiminki - Oulu,,3,,000000,ffffff
+591,48315,59S,Hailuoto - OYS,,3,,000000,ffffff
+52,6750,52,Oulu - Liminka - Tyrnävä,,3,,000000,ffffff
+15,47258,15,Nallikari - Mäntylä,,3,,3300cc,ffffff
+101,48315,B,Keskusta - Medipolis,,3,,999999,000000
+221,6750,2N,Ritaharju - Metsokangas,,3,,3300cc,ffffff
+36,6915,36,Ylikiiminki - Oulu,,3,,000000,ffffff
+386,6915,38Y,Kiiminki - Ylikiiminki,,3,,000000,ffffff
+991,6750,9V,Heikkinharju - Lentoasema,,3,,3300cc,ffffff
+402,47258,40A,Oulu - Muhos - Oulu,,3,,000000,ffffff
+40,47258,40,Oulu - Muhos - Oulu,,3,,000000,ffffff
+201,6750,20B,Martinniemi - OYS,,3,,000000,ffffff
+352,6750,35N,Keskusta - Kiiminki,,3,,000000,ffffff
+14,6750,14,Kaukovainio - Välivainio,,3,,3300cc,ffffff
+203,6750,20N,Keskusta - Martinniemi,,3,,000000,ffffff
+103,48315,BK,Keskusta - Medipolis,,3,,999999,000000
+351,6750,35K,Lintula - Kiiminki,,3,,000000,ffffff
+10,6750,10,Koskela - Heikinharju,,3,,3300cc,ffffff
+3,6750,3,Ritaharju - Kaakkuri,,3,,3300cc,ffffff

@@ -1,0 +1,6 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone
+1000,"Kutsuohjattu palveluliikenne, tilaukset puh. 08 558 44015",http://www.ouka.fi/oulu/tekli/palveluliikenteen-aikataulut,Europe/Helsinki,fi,
+6750,"Oulun joukkoliikenne",http://www.oulunjoukkoliikenne.fi,Europe/Helsinki,fi,
+48315,"Oulun joukkoliikenne",http://www.oulunjoukkoliikenne.fi,Europe/Helsinki,fi,
+6915,"Oulun joukkoliikenne",http://www.oulunjoukkoliikenne.fi,Europe/Helsinki,fi,
+47258,"Oulun joukkoliikenne",http://www.oulunjoukkoliikenne.fi,Europe/Helsinki,fi,

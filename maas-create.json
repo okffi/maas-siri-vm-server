@@ -25,6 +25,7 @@
 								"sudo apt-get install python-lxml",
 								"sudo apt-get install python-shortuuid",
 								"sudo pip install PPyGIS",
+								"sudo pip install unicodecsv",
 								"sudo mkdir /maas",
 								"sudo mkdir /maas/server",
 								"/etc/init.d/postgresql start"
