@@ -581,24 +581,20 @@ class MaaS():
 					})
 				return collection
 
-		def pullPublicTransportStopVisitTimes(self):
+		def pullPublicTransportStopVisitTimes(self, offset=0):
+
+				limit=2
+
 				cursor = self.cursor()
 				url='http://92.62.36.215:8080/siri/sm?MaximumStopVisits=1&id='
 				headers = {
-#                "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.46 Safari/535.11",
-#                "Accept" : "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,text/png,*/*;q=0.5",
-#                "Accept-Language" : "en-us,en;q=0.5",
-#                "Accept-Charset" : "ISO-8859-1",
 								"Content-type": "application/xml; charset=utf-8",
-#                "Host" : "www.mitfahrgelegenheit.de",
-#                "Referer" : "http://www.mitfahrgelegenheit.de/mitfahrzentrale/Dresden/Potsdam.html/"
 								}
-				sql = "SELECT stop_id FROM mt_stop"
-				cursor.execute(sql)
+				sql = """SELECT stop_id FROM mt_stop s ORDER BY stop_id ASC LIMIT %s OFFSET %s"""
+				cursor.execute(sql, (limit, offset,))
 				records = cursor.fetchall()
 
 				opener = urllib2.build_opener()
-				print "Starting ", datetime.datetime.now()
 				for record in records:
 					req = urllib2.Request(url + str(record[0]), None, headers)
 					res = opener.open(req)
@@ -612,16 +608,18 @@ class MaaS():
 							cursor.execute("INSERT INTO mt_stop_visit (stop_id, aimed_arrival_time, expected_arrival_time) VALUES (%s, %s, %s)",
 																 (record[0], aimedTime, expectedTime))
 						except db.IntegrityError as e:
-							print "duplicate error", record[0]
 							self.connection.rollback()
 						except:
 							raise
 						else:
-							print "commit", record[0]
 							self.connection.commit()
-				print "Done ", datetime.datetime.now()
 
-				#threading.Timer(30.0, hello).start
+				if(not len(records)):
+					offset=0
+				else:
+					offset+=limit
+
+				threading.Timer(5.0, lambda: MaaS().pullPublicTransportStopVisitTimes(offset)).start()
 				return
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
@@ -810,7 +808,7 @@ class ForkingHTTPServer(SocketServer.ForkingMixIn, BaseHTTPServer.HTTPServer):
 def httpd(handler_class=ServerHandler, server_address=('localhost', 80)):
 		print "MaaS API Server starting"
 		try:
-				#MaaS().pullPublicTransportStopVisitTimes()
+				MaaS().pullPublicTransportStopVisitTimes()
 				srvr = ForkingHTTPServer(server_address, handler_class)
 				srvr.serve_forever()  # serve_forever
 		except KeyboardInterrupt:
