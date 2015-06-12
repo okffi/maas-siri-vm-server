@@ -704,7 +704,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 						elif "/pt/vehicles" == parsed_path.path:
 								self.send_response_body(MaaS().getPublicTransportVehicles())
 						elif "/" == parsed_path.path:
-								self.send_response_body({"name": "MaaS API Server", "documentation": "https://github.com/okffi/sujuvuusnavigaattori-server", "version": "1.0"})
+								self.send_response_body({"name": "MaaS API Server (with SIRI)", "documentation": "https://github.com/okffi/maas-siri-vm-server", "version": "1.0"})
 						else:
 								self.send_error(404, "Not found")
 				except BadRequestException as e:
