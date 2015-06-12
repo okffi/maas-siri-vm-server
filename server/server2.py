@@ -480,7 +480,12 @@ class MaaS():
 
 				cursor = self.cursor()
 
-				sql = "SELECT stop_id, ST_AsGeoJSON(geometry) AS geometry, name, (SELECT EXTRACT(EPOCH FROM (expected_arrival_time - aimed_arrival_time)) FROM mt_stop_visit v WHERE s.stop_id = v.stop_id ORDER BY aimed_arrival_time DESC LIMIT 1) AS delay FROM mt_stop s"
+				sql = """SELECT stop_id,
+												ST_AsGeoJSON(geometry) AS geometry,
+												name,
+												(SELECT EXTRACT(EPOCH FROM (expected_arrival_time - aimed_arrival_time)) FROM mt_stop_visit v1 WHERE s.stop_id = v1.stop_id ORDER BY aimed_arrival_time DESC LIMIT 1) AS delay,
+												(SELECT EXTRACT(EPOCH FROM (current_timestamp - MAX(aimed_arrival_time))) FROM mt_stop_visit v2 WHERE s.stop_id = v2.stop_id) AS delay_age
+												FROM mt_stop s"""
 				cursor.execute(sql)
 				records = cursor.fetchall()
 
@@ -495,7 +500,8 @@ class MaaS():
 								'properties': {
 										'id': record[0],
 										'name': record[2],
-										'delay': record[3]
+										'delay': record[3],
+										'delay_age': record[4]
 								}
 						})
 				return collection

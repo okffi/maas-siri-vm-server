@@ -898,7 +898,7 @@ module.exports = L.Realtime;
 																opacity: 0.3,
 																weight: 1,
 																fill: true,
-																fillOpacity: 0.5,
+																fillOpacity: categorizeDelayAge(feature['properties']['delay_age']),
 																fillColor: colors[categorizeDelay(feature['properties']['delay'])],
 																clickable: false
 															})
@@ -932,6 +932,14 @@ module.exports = L.Realtime;
 														if (delay<=8*60) return 4;
 														if (delay>8*60) return 5;
 														return 0;
+												}
+												function categorizeDelayAge(delayAge) {
+														if (delayAge==null) return 0.2;
+														if (delayAge<=5*60) return 0.75;
+														if (delayAge<=15*60) return 0.6;
+														if (delayAge<=30*60) return 0.45;
+														if (delayAge>30*60) return 0.2;
+														return 0.2;
 												}
 								});
 
