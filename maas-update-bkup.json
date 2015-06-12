@@ -1,0 +1,37 @@
+{
+	"variables": {
+		"base_image": "okffi/maas",
+		"maas_image": "okffi/maas"
+	},
+	"builders": [
+		{
+				"type": "docker",
+				"image": "{{user `base_image`}}",
+				"commit": true,
+				"pull": false
+		}
+	],
+	"provisioners": [
+				{
+					"type": "file",
+					"source": "server",
+					"destination": "/maas"
+				},
+				{
+						"type": "shell",
+						"inline": [
+								"/etc/init.d/postgresql start",
+								"sudo -u postgres psql -d sujuvuusnavigaattori -a -f /maas/server/update.sql"
+						]
+				}
+	],
+	"post-processors": [
+				[
+						{
+								"type": "docker-tag",
+								"repository": "{{user `maas_image`}}",
+								"tag": "latest"
+						}
+				]
+		]
+}
