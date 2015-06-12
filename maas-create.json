@@ -1,7 +1,7 @@
 {
 	"variables": {
 		"base_image": "ubuntu:latest",
-		"maas_image": "okffi/maas"
+		"maas_image": "okffi/maas-siri"
 	},
 	"builders": [
 		{
