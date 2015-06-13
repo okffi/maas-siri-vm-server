@@ -865,6 +865,9 @@ module.exports = L.Realtime;
 																		{attribution: 'Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'})
 												.addTo(map);
 
+												var colors=['#ccc', '#5899fa', '#5bdeb1', '#ff7', '#f79f34', '#f46b6b'];
+
+
 //												L.realtime({url: '/pt/vehicles',
 //													type: 'json'
 //												}, {
@@ -884,27 +887,52 @@ module.exports = L.Realtime;
 //													interval: 5 * 1000
 //												}).addTo(map);
 
-												var colors=['#ccc', '#5899fa', '#5bdeb1', '#ff7', '#f79f34', '#f46b6b'];
-												L.realtime({url: '/pt/stops',
-														type: 'json'
-												}, {
-														pointToLayer: function(feature, latlng) {
-															return new L.CircleMarker(latlng, {
-																weight: 7,
-																opacity: 1,
-																radius: 5,
-																stroke: false,
-																color: '#000',
-																opacity: 0.3,
-																weight: 1,
-																fill: true,
-																fillOpacity: categorizeDelayAge(feature['properties']['delay_age']),
-																fillColor: colors[categorizeDelay(feature['properties']['delay'])],
-																clickable: false
-															})
-														},
-														interval: 5*1000
-												}).addTo(map);
+//												L.realtime({url: '/pt/stops',
+//														type: 'json'
+//												}, {
+//														pointToLayer: function(feature, latlng) {
+//															return new L.CircleMarker(latlng, {
+//																weight: 7,
+//																opacity: 1,
+//																radius: 5,
+//																stroke: false,
+//																color: '#000',
+//																opacity: 0.3,
+//																weight: 1,
+//																fill: true,
+//																fillOpacity: categorizeDelayAge(feature['properties']['delay_age']),
+//																fillColor: colors[categorizeDelay(feature['properties']['delay'])],
+//																clickable: false
+//															})
+//														},
+//														interval: 5*1000
+//												}).addTo(map);
+
+												$.ajax({
+														url: '/pt/stops',
+														type: 'get',
+														contentType: 'application/json'
+												})
+												.done(function(data) {
+
+														L.geoJson(data, {
+																pointToLayer: function(feature, latlng) {
+																	return new L.CircleMarker(latlng, {
+																		weight: 7,
+																		opacity: 1,
+																		radius: 5,
+																		stroke: false,
+																		color: '#000',
+																		opacity: 0.3,
+																		weight: 1,
+																		fill: true,
+																		fillOpacity: categorizeDelayAge(feature['properties']['delay_age']),
+																		fillColor: colors[categorizeDelay(feature['properties']['delay'])],
+																		clickable: false
+																})
+															}
+														}).addTo(map).bringToBack();
+												});
 
 												$.ajax({
 														url: '/pt/routes',
