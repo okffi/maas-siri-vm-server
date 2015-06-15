@@ -865,7 +865,7 @@ module.exports = L.Realtime;
 																		{attribution: 'Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'})
 												.addTo(map);
 
-												var colors=['#ccc', '#5899fa', '#5bdeb1', '#ff7', '#f79f34', '#f46b6b'];
+												var colors=['#ccc', '#5899fa', '#5bdeb1', '#ff7', '#f79f34', '#f46b6b', 'transparent'];
 
 
 //												L.realtime({url: '/pt/vehicles',
@@ -909,6 +909,25 @@ module.exports = L.Realtime;
 //												}).addTo(map);
 
 												$.ajax({
+														url: '/reports/speed-averages',
+														type: 'get',
+														contentType: 'application/json'
+												})
+												.done(function(data) {
+
+														L.geoJson(data, {
+																style: function(f) {
+																		return {
+																				color: colors[categorizeSpeed(f['properties']['speed'])],
+																				weight: 3,
+																				opacity: 0.5
+																		}
+																}
+														}).addTo(map);
+
+												});
+
+												$.ajax({
 														url: '/pt/stops',
 														type: 'get',
 														contentType: 'application/json'
@@ -934,23 +953,17 @@ module.exports = L.Realtime;
 														}).addTo(map).bringToBack();
 												});
 
-												$.ajax({
-														url: '/pt/routes',
-														type: 'get',
-														contentType: 'application/json'
-												})
-												.done(function(data) {
-
-														L.geoJson(data, {
-																style: function(f) {
-																		return {
-																				color: '#999',//#ee8989',
-																				weight: 2,
-																				opacity: 0.2
-																		}
-																}
-														}).addTo(map).bringToBack();
-												});
+												function categorizeSpeed(speed) {
+														speed=speed*3.6
+														if (speed<=0) return 0;
+														if (speed<=15) return 5;
+														if (speed<=30) return 4;
+														if (speed<=50) return 3;
+														if (speed<=80) return 2;
+														if (speed<=200) return 1;
+														if (speed>200) return 6;
+														return 0;
+												}
 
 												function categorizeDelay(delay) {
 														if (delay==null) return 0;

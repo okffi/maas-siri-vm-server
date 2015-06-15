@@ -156,7 +156,6 @@ class MaaS():
 				return plan
 
 		def getAverageSpeedsReport(self, boundary='', type='', planID='', after='', before=''):
-				print boundary, len(boundary)
 
 				if type!='baseline':
 						if type!='realtime':
@@ -257,7 +256,7 @@ class MaaS():
 				cursor.execute(sql)
 				collection=[]
 				for record in cursor.fetchall():
-						linestring=json.loads(record[0])
+						linestring=record[0]
 						cursor.execute("select ST_Length(ST_Transform(ST_GeomFromGeoJSON(%s)::geometry, 2839))",  (json.dumps({'type': 'LineString', 'coordinates': linestring, 'crs': {'type':'name', 'properties': {'name': 'EPSG:4326'}}}),))
 						length=cursor.fetchone()[0]
 						feature={
@@ -289,8 +288,8 @@ class MaaS():
 												reading=0
 
 										if len(feature['speeds']):
-												if self.categorizeSpeed(speed) != self.categorizeSpeed(feature['speeds'][-1]):
-														if (sum(feature['lengths']) >= min_length and feature['remaining-length'] - sum(feature['lengths'])>=min_length) or (self.categorizeSpeed(speed)==1):
+												if self.categorizeBusSpeed(speed) != self.categorizeBusSpeed(feature['speeds'][-1]):
+														if (sum(feature['lengths']) >= min_length and feature['remaining-length'] - sum(feature['lengths'])>=min_length) or (self.categorizeBusSpeed(speed)==1):
 																feature['speed']=float(sum(feature['speeds']))/len(feature['speeds'])
 																feature['reading']=float(sum(feature['readings']))/len(feature['readings'])
 																collection.append([copy.deepcopy(feature['coordinates']), feature['speed'], feature['reading']])
@@ -338,26 +337,22 @@ class MaaS():
 				data=self.wfs().dispatchRequest(path_info="/maas", params={'service': 'WFS', 'request': 'GetFeature', 'format': 'wfs'}, base_path=base_url, request_method="GET")
 				return data.getData()
 
-		def categorizeSpeed(self, speed):
+		def categorizeBusSpeed(self, speed):
 				speed=speed*3.6
-				if speed<=10:
-						return 1
-				if speed<=12:
-						return 2
+				if speed<=0:
+						return 0
 				if speed<=15:
-						return 3
-				if speed<=20:
-						return 4
-				if speed<=25:
-						return 5
+						return 1
 				if speed<=30:
+						return 2
+				if speed<=50:
+						return 3
+				if speed<=80:
+						return 4
+				if speed<=200:
+						return 5
+				else:
 						return 6
-				if speed<=35:
-						return 7
-				if speed<=45:
-						return 8
-				if speed>45:
-						return 9
 				return -1
 
 		def importGTFSData(self):
@@ -532,13 +527,7 @@ class MaaS():
 		def getPublicTransportVehicles(self):
 				url='http://92.62.36.215:8080/siri-vm-ws/NotificationProducer'
 				headers = {
-#                "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.46 Safari/535.11",
-#                "Accept" : "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,text/png,*/*;q=0.5",
-#                "Accept-Language" : "en-us,en;q=0.5",
-#                "Accept-Charset" : "ISO-8859-1",
 								"Content-type": "application/xml; charset=utf-8",
-#                "Host" : "www.mitfahrgelegenheit.de",
-#                "Referer" : "http://www.mitfahrgelegenheit.de/mitfahrzentrale/Dresden/Potsdam.html/"
 								}
 				body ="""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:siri="http://wsdl.siri.org.uk/siri" xmlns:siri1="http://www.siri.org.uk/siri">
 									 <soapenv:Header/>
@@ -593,6 +582,7 @@ class MaaS():
 
 				cursor = self.cursor()
 				url='http://92.62.36.215:8080/siri/sm?MaximumStopVisits=1&id='
+				url='http://127.0.0.1:8080/siri/sm?MaximumStopVisits=1&id='
 				headers = {
 								"Content-type": "application/xml; charset=utf-8",
 								}
@@ -602,6 +592,7 @@ class MaaS():
 
 				opener = urllib2.build_opener()
 				for record in records:
+					#print "Updating stop " + str(record[0])
 					req = urllib2.Request(url + str(record[0]), None, headers)
 					res = opener.open(req)
 					xml = res.read();
@@ -619,6 +610,7 @@ class MaaS():
 							raise
 						else:
 							self.connection.commit()
+					#print "done updating stop"
 
 				if(not len(records)):
 					offset=0
@@ -626,6 +618,120 @@ class MaaS():
 					offset+=limit
 
 				threading.Timer(5.0, lambda: MaaS().pullPublicTransportStopVisitTimes(offset)).start()
+				return
+
+		def pullPublicTransportVehicleSpeeds(self, offset=0):
+
+				limit=1
+
+				cursor = self.cursor()
+				url='http://92.62.36.215:8080/siri-vm-ws/NotificationProducer'
+				url='http://127.0.0.1:8080/siri-vm-ws/NotificationProducer'
+				headers = {
+								"Content-type": "application/xml; charset=utf-8",
+								}
+
+				sql = """SELECT distinct route_id, short_name, ST_AsGeoJSON(geometry) FROM mt_route r ORDER BY route_id ASC LIMIT %s OFFSET %s"""
+				cursor.execute(sql, (limit, offset,))
+				records = cursor.fetchall()
+
+				opener = urllib2.build_opener()
+
+
+				for record in records:
+					#print "Updating line " + str(record[1])
+					body ="""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:siri="http://wsdl.siri.org.uk/siri" xmlns:siri1="http://www.siri.org.uk/siri">
+										 <soapenv:Header/>
+										 <soapenv:Body>
+												<siri:GetVehicleMonitoring>
+													 <ServiceRequestInfo>
+															<siri1:RequestTimestamp>2015-06-12T11:50:11.406+02:00</siri1:RequestTimestamp>
+															<siri1:RequestorRef>okffi</siri1:RequestorRef>
+													 </ServiceRequestInfo>
+													 <Request version="2.0">
+															<siri1:RequestTimestamp>2015-06-12T11:50:11.406+02:00</siri1:RequestTimestamp>
+															<siri1:LineRef>""" + record[1] + """</siri1:LineRef>
+													 </Request>
+													 <RequestExtension>
+															<!--You may enter ANY elements at this point-->
+													 </RequestExtension>
+												</siri:GetVehicleMonitoring>
+										 </soapenv:Body>
+									</soapenv:Envelope>"""
+
+					req = urllib2.Request(url, body, headers)
+					res = opener.open(req)
+					xml = res.read();
+
+					root = ET.fromstring(xml)
+
+					for activity in root.findall('.//{http://www.siri.org.uk/siri}MonitoredVehicleJourney[{http://www.siri.org.uk/siri}PreviousCalls][{http://www.siri.org.uk/siri}DirectionRef][{http://www.siri.org.uk/siri}LineRef]'):
+
+						vehicleRef=activity.find('.//{http://www.siri.org.uk/siri}VehicleRef')
+						lineRef=activity.find('.//{http://www.siri.org.uk/siri}LineRef')
+						directionRef=activity.find('.//{http://www.siri.org.uk/siri}DirectionRef')
+						journeyStartTime=activity.find('.//{http://www.siri.org.uk/siri}PreviousCalls/{http://www.siri.org.uk/siri}PreviousCall[last()]/{http://www.siri.org.uk/siri}AimedArrivalTime')
+						journeyID = "oulubuses.line:" + lineRef.text + ".direction:" + directionRef.text + ".vehicle:" + vehicleRef.text + ".start:" + journeyStartTime.text
+
+						measurements=[]
+
+						stops=activity.findall('.//{http://www.siri.org.uk/siri}PreviousCalls/{http://www.siri.org.uk/siri}PreviousCall[{http://www.siri.org.uk/siri}StopPointRef][{http://www.siri.org.uk/siri}ActualArrivalTime][{http://www.siri.org.uk/siri}ActualDepartureTime]')
+
+						for i, stop in enumerate(stops):
+							measurements.append({
+								'stopRef': stop.find('{http://www.siri.org.uk/siri}StopPointRef').text,
+								'arrivalTime': stop.find('{http://www.siri.org.uk/siri}ActualArrivalTime').text,
+								'departureTime': stop.find('{http://www.siri.org.uk/siri}ActualDepartureTime').text
+							});
+							if i>0:
+								sql = """SELECT ST_Length(ST_Transform(geometry, 2839)) as distance,
+																EXTRACT(EPOCH FROM (%s::timestamptz - %s::timestamptz)) AS duration,
+																ST_AsGeoJSON(geometry) AS geometry
+													FROM (SELECT
+																		ST_Line_Substring(
+																			r.geometry,
+																			LEAST(ST_Line_Locate_Point(r.geometry, (SELECT geometry FROM mt_stop WHERE stop_id=%s)),
+																					ST_Line_Locate_Point(r.geometry, (SELECT geometry FROM mt_stop WHERE stop_id=%s))),
+																			GREATEST(ST_Line_Locate_Point(r.geometry, (SELECT geometry FROM mt_stop WHERE stop_id=%s)),
+																					ST_Line_Locate_Point(r.geometry, (SELECT geometry FROM mt_stop WHERE stop_id=%s)))
+																		) AS geometry
+																FROM mt_route r
+																WHERE short_name=%s) s"""
+								cursor.execute(sql, (measurements[i-1]['arrivalTime'],
+																		 measurements[i]['departureTime'],
+																		 measurements[i-1]['stopRef'],
+																		 measurements[i]['stopRef'],
+																		 measurements[i-1]['stopRef'],
+																		 measurements[i]['stopRef'],
+																		 record[1]
+																		 ,))
+								for route in cursor.fetchall():
+									distance=route[0]
+									duration=route[1]
+									linestring=json.loads(route[2])['coordinates']
+									for j, point in enumerate(linestring):
+										if j>0:
+											route=[]
+											route.append(ppygis.Point(linestring[j-1][0], linestring[j-1][1], linestring[j-1][2], srid=4326))
+											route.append(ppygis.Point(linestring[j][0], linestring[j][1], linestring[j][2], srid=4326))
+											route=ppygis.LineString(route, srid=4326)
+											try:
+												cursor.execute("INSERT INTO route (geometry, journey_id, timestamp, speed, mode, realtime) VALUES (%s, %s, %s, %s, %s, %s)",
+																			(route, journeyID, measurements[i]['departureTime'], 0 if duration == 0 else distance/duration, "BUS", False, ))
+											except db.IntegrityError as e:
+												self.connection.rollback()
+											except:
+												raise
+											else:
+												self.connection.commit()
+					#print "done updating line"
+
+				if(not len(records)):
+					offset=0
+				else:
+					offset+=limit
+
+				threading.Timer(5.0, lambda: MaaS().pullPublicTransportVehicleSpeeds(offset)).start()
 				return
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
@@ -812,9 +918,11 @@ class ForkingHTTPServer(SocketServer.ForkingMixIn, BaseHTTPServer.HTTPServer):
 				BaseHTTPServer.HTTPServer.finish_request(self, request, client_address)
 
 def httpd(handler_class=ServerHandler, server_address=('localhost', 80)):
-		print "MaaS API Server starting"
+		print "Starting automatic tasks..."
 		try:
 				MaaS().pullPublicTransportStopVisitTimes()
+				MaaS().pullPublicTransportVehicleSpeeds()
+				print "Starting MaaS API Server..."
 				srvr = ForkingHTTPServer(server_address, handler_class)
 				srvr.serve_forever()  # serve_forever
 		except KeyboardInterrupt:
