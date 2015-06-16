@@ -256,7 +256,7 @@ class MaaS():
 				cursor.execute(sql)
 				collection=[]
 				for record in cursor.fetchall():
-						linestring=record[0]
+						linestring=json.loads(record[0])
 						cursor.execute("select ST_Length(ST_Transform(ST_GeomFromGeoJSON(%s)::geometry, 2839))",  (json.dumps({'type': 'LineString', 'coordinates': linestring, 'crs': {'type':'name', 'properties': {'name': 'EPSG:4326'}}}),))
 						length=cursor.fetchone()[0]
 						feature={
@@ -582,7 +582,7 @@ class MaaS():
 
 				cursor = self.cursor()
 				url='http://92.62.36.215:8080/siri/sm?MaximumStopVisits=1&id='
-				url='http://127.0.0.1:8080/siri/sm?MaximumStopVisits=1&id='
+#				url='http://127.0.0.1:8080/siri/sm?MaximumStopVisits=1&id='
 				headers = {
 								"Content-type": "application/xml; charset=utf-8",
 								}
@@ -626,7 +626,7 @@ class MaaS():
 
 				cursor = self.cursor()
 				url='http://92.62.36.215:8080/siri-vm-ws/NotificationProducer'
-				url='http://127.0.0.1:8080/siri-vm-ws/NotificationProducer'
+#				url='http://127.0.0.1:8080/siri-vm-ws/NotificationProducer'
 				headers = {
 								"Content-type": "application/xml; charset=utf-8",
 								}
